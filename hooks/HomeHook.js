@@ -1,3 +1,4 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import { useEffect, useState } from "react";
 import { vendingService } from "../api/vending";
@@ -9,6 +10,12 @@ export function useHome(isFocused) {
   const [press, setPress] = useState(false);
 
   const fetchProduct = async () => {
+
+    const vendingName = await AsyncStorage.getItem('@vending_name')
+    if (vendingName === null) {
+      navigation.navigate('Setting');
+    }
+
     try {
       const res = await vendingService.getProduct();
 

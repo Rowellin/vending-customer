@@ -1,3 +1,4 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Buffer } from "buffer";
 
 const user = 'user';
@@ -19,7 +20,7 @@ export const vendingService = {
 
     const response = await fetch(
       `${config.url}/products?${new URLSearchParams({
-        'vending': 'aft_kosayu',
+        'vending': await AsyncStorage.getItem('@vending_name'),
       })}`,
       options
     )
@@ -32,7 +33,7 @@ export const vendingService = {
       method: 'POST',
       headers: config.headers,
       body: JSON.stringify({
-        'vending': 'aft_kosayu',
+        'vending': await AsyncStorage.getItem('@vending_name'),
         'product': item.name,
         'amount': item.price,
       })
@@ -41,5 +42,30 @@ export const vendingService = {
     const response = await fetch(`${config.url}/invoice`, options)
 
     return await response.json();
-  }
+  },
+
+  login: async (req) => {
+    const options = {
+      method: 'POST',
+      headers: config.headers,
+      body: JSON.stringify(req)
+    }
+
+    const response = await fetch(`${config.url}/login`, options)
+
+    return await response.json();
+  },
+
+  vendingCheck: async (vending) => {
+    const options = {
+      headers: config.headers,
+    }
+
+    const response = await fetch(
+      `${config.url}/vending-check?${new URLSearchParams({ vending })}`,
+      options
+    )
+
+    return await response.json();
+  },
 }
