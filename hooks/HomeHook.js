@@ -6,7 +6,10 @@ import { vendingService } from "../api/vending";
 export function useHome(isFocused) {
   const navigation = useNavigation();
   const [error, setError] = useState(null);
-  const [product, setProduct] = useState([]);
+  const [data, setData] = useState({
+    'products': [],
+    'bg': null,
+  });
   const [press, setPress] = useState(false);
 
   const fetchProduct = async () => {
@@ -20,7 +23,7 @@ export function useHome(isFocused) {
       const res = await vendingService.getProduct();
 
       if (res.success) {
-        setProduct(res.data)
+        setData({ products: res.data.products, bg: res.data.bg_image })
       } else {
         throw res.message
       }
@@ -56,7 +59,7 @@ export function useHome(isFocused) {
 
   return {
     error,
-    product,
+    data,
     press,
     onPressHandler,
   }
