@@ -5,7 +5,6 @@ import { vendingService } from "../api/vending";
 
 export function useHome(isFocused) {
   const navigation = useNavigation();
-  const [error, setError] = useState(null);
   const [data, setData] = useState({
     'products': [],
     'bg': null,
@@ -28,7 +27,7 @@ export function useHome(isFocused) {
         throw res.message
       }
     } catch (error) {
-      setError(error.message)
+      ToastAndroid.show(error.message, ToastAndroid.SHORT);
     }
   }
 
@@ -49,7 +48,7 @@ export function useHome(isFocused) {
         throw res.message
       }
     } catch (error) {
-      setError(error.message)
+      ToastAndroid.show(error.message, ToastAndroid.SHORT);
     }
   }
 
@@ -58,7 +57,6 @@ export function useHome(isFocused) {
   }, [isFocused])
 
   return {
-    error,
     data,
     press,
     onPressHandler,
