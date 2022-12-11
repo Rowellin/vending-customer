@@ -3,8 +3,7 @@ import React from 'react'
 
 export default function ProductCard({ value: { item, index }, press, onPressHandler }) {
   return (
-    <TouchableOpacity
-      onPress={() => onPressHandler(item)}
+    <View
       key={index}
       disabled={press}
       className='p-3 bg-white m-3 rounded-lg w-44 flex-row justify-center'
@@ -20,11 +19,16 @@ export default function ProductCard({ value: { item, index }, press, onPressHand
         <View className='my-1'>
           <Text className='font-bold text-xs'>{item.name}</Text>
         </View>
-        <View className='flex-row justify-between'>
-          <Text style={{ fontSize: 11 }} >Rp. {item.price}</Text>
-          <Text style={{ fontSize: 10 }} className='text-gray-500'>Stok: {item.stock}</Text>
+        <View className='flex-row justify-between items-center'>
+          <View>
+            <Text style={{ fontSize: 11 }} >Rp. {item.price}</Text>
+            <Text style={{ fontSize: 10 }} className='text-gray-500'>Stok: {item.stock}</Text>
+          </View>
+          <TouchableOpacity className='py-1 px-2 rounded-sm bg-blue-500' onPress={() => onPressHandler(item)}>
+            <Text className='text-white font-bold'>Beli</Text>
+          </TouchableOpacity>
         </View>
       </View>
-    </TouchableOpacity>
+    </View>
   )
 }

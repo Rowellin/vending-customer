@@ -7,7 +7,7 @@ export default function Setting() {
 
   return (
     <View className='flex-row justify-end'>
-      <TouchableOpacity className='bg-gray-300 p-2' onPress={() => navigation.navigate('Setting')}></TouchableOpacity>
+      <TouchableOpacity className='bg-gray-300 p-1.5' onPress={() => navigation.navigate('Setting')}></TouchableOpacity>
     </View>
   )
 }
