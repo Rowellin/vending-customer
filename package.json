@@ -21,7 +21,8 @@
     "react-native": "0.70.5",
     "react-native-webview": "11.23.1",
     "react-redux": "^8.0.5",
-    "tailwindcss-react-native": "^1.7.10"
+    "tailwindcss-react-native": "^1.7.10",
+    "expo-dev-client": "~2.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
