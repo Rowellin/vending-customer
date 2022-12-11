@@ -13,7 +13,7 @@ export default function HomeScreen() {
   const { data: { products, bg }, press, onPressHandler } = useHome(isFocused);
 
   return (
-    <ImageBackground className='flex-1' source={bg ? { uri: bg } : ''} resizeMode="cover">
+    <ImageBackground className='flex-1' source={bg ? { uri: bg + '?' + new Date() } : ''} resizeMode="cover">
       <Setting />
       <VideoHome />
       <ScrollView
