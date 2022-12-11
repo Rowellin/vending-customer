@@ -5,7 +5,6 @@ export default function ProductCard({ value: { item, index }, press, onPressHand
   return (
     <View
       key={index}
-      disabled={press}
       className='p-3 bg-white m-3 rounded-lg w-44 flex-row justify-center'
     >
       <View style={{ display: 'flex', flexDirection: 'column' }}>
@@ -13,7 +12,6 @@ export default function ProductCard({ value: { item, index }, press, onPressHand
           <Image
             source={item.image ? { uri: item.image } : require('./../assets/no-image.jpg')}
             style={{ width: 100, height: 100, resizeMode: 'stretch' }}
-            blurRadius={press ? 5 : 0}
           />
         </View>
         <View className='my-1'>
@@ -24,7 +22,11 @@ export default function ProductCard({ value: { item, index }, press, onPressHand
             <Text style={{ fontSize: 11 }} >Rp. {item.price}</Text>
             <Text style={{ fontSize: 10 }} className='text-gray-500'>Stok: {item.stock}</Text>
           </View>
-          <TouchableOpacity className='py-1 px-2 rounded-sm bg-blue-500' onPress={() => onPressHandler(item)}>
+          <TouchableOpacity
+            className={`py-1 px-2 rounded-sm ${press ? 'bg-blue-300' : 'bg-blue-500'}`}
+            onPress={() => onPressHandler(item)}
+            disabled={press}
+          >
             <Text className='text-white font-bold'>Beli</Text>
           </TouchableOpacity>
         </View>
