@@ -1,11 +1,8 @@
-import { View, Text, TextInput, Button, ToastAndroid } from 'react-native'
+import { View, Text, TextInput, Button } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import React, { useState } from 'react'
 import { useNavigation } from '@react-navigation/native'
 import { useSetting } from '../hooks/SettingHook';
-import * as ImagePicker from 'expo-image-picker';
-import { setUri } from '../Slices/HomeSlice';
-import { useDispatch } from 'react-redux';
 
 export default function SettingScreen() {
   const navigation = useNavigation();
@@ -15,22 +12,7 @@ export default function SettingScreen() {
   });
   const [name, setName] = useState('');
 
-  const { isLoggedIn, onLoginHandler, submitNameHandler, isName } = useSetting(setName);
-
-  const dispatch = useDispatch()
-
-  const selectVideo = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Videos,
-      quality: 1,
-    });
-    if (!result.canceled) {
-      dispatch(setUri(result.assets[0].uri))
-      ToastAndroid.show('Success choosing video', ToastAndroid.SHORT);
-    } else {
-      ToastAndroid.show('Error getting video', ToastAndroid.SHORT);
-    }
-  };
+  const { isLoggedIn, onLoginHandler, submitNameHandler, isName, selectVideo } = useSetting(setName);
 
   return (
     <SafeAreaView className='p-4 bg-gray-300'>
