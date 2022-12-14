@@ -10,7 +10,7 @@ export default function ProductCard({ value: { item, index }, press, onPressHand
       <View style={{ display: 'flex', flexDirection: 'column' }}>
         <View style={{ width: 130 }} className='border-2 flex-row justify-center rounded-lg border-gray-200'>
           <Image
-            source={item.image ? { uri: item.image } : require('./../assets/no-image.jpg')}
+            source={item.image ? { uri: item.image + '?' + new Date() } : require('./../assets/no-image.jpg')}
             style={{ width: 100, height: 100, resizeMode: 'stretch' }}
           />
         </View>
