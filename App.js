@@ -17,7 +17,7 @@ export default function App() {
       <TailwindProvider>
         <NavigationContainer>
           <Stack.Navigator>
-            <Stack.Screen name="Home" component={HomeScreen} />
+            <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
             <Stack.Screen name="Setting" component={SettingScreen} options={{ headerShown: false }} />
             <Stack.Screen name="Payment" component={PaymentScreen} />
           </Stack.Navigator>
