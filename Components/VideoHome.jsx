@@ -7,15 +7,17 @@ export default function VideoHome() {
   const uri = useSelector(state => state.videoHome)
 
   return (
-    <View style={styles.container}>
-      <Video
-        style={styles.video}
-        source={uri ? { uri } : require('./../assets/default_video.mp4')}
-        resizeMode="contain"
-        isLooping
-        shouldPlay
-      />
-    </View>
+    <>
+      <View style={styles.container}>
+        {uri && <Video
+          style={styles.video}
+          source={{ uri }}
+          resizeMode="contain"
+          isLooping
+          shouldPlay
+        />}
+      </View>
+    </>
   )
 }
 

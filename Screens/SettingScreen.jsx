@@ -56,10 +56,10 @@ export default function SettingScreen() {
             />
             <Button title='Submit' className='text-blue-200' onPress={() => submitNameHandler(name)} />
           </View>
-          <View className='flex-row items-center my-3'>
+          {/* <View className='flex-row items-center my-3'>
             <Text className='w-20'>Video: </Text>
             <Button title='Select Video' className='text-blue-200' onPress={selectVideo} />
-          </View>
+          </View> */}
         </View>
       }
     </SafeAreaView>

@@ -1,7 +1,11 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
+import * as FileSystem from 'expo-file-system';
 import { useEffect, useState } from "react";
+import { ToastAndroid } from "react-native";
+import { useDispatch } from "react-redux";
 import { vendingService } from "../api/vending";
+import { setUri } from "../Slices/HomeSlice";
 
 export function useHome(isFocused) {
   const navigation = useNavigation();
@@ -10,6 +14,7 @@ export function useHome(isFocused) {
     'bg': null,
   });
   const [press, setPress] = useState(false);
+  const dispatch = useDispatch();
 
   const fetchProduct = async () => {
 
@@ -18,11 +23,32 @@ export function useHome(isFocused) {
       navigation.navigate('Setting');
     }
 
+    async function downloadVideo(from, name, uriSrc) {
+      await AsyncStorage.setItem('@ln_video_uri', uriSrc);
+      const { uri } = await FileSystem.downloadAsync(from, FileSystem.documentDirectory + name);
+      dispatch(setUri(uri))
+      await AsyncStorage.setItem('@ln_video_loc', uri);
+    }
+
     try {
       const res = await vendingService.getProduct();
 
       if (res.success) {
-        setData({ products: res.data.products, bg: res.data.bg_image })
+        setData(res.data)
+
+        if (res.data.video.ln_video_uri) {
+          const ln_video = await AsyncStorage.getItem('@ln_video_uri')
+          if (ln_video === null || res.data.video.ln_video_uri !== ln_video) {
+            downloadVideo(res.data.video.ln_video_uri, 'ln_video.mp4', res.data.video.ln_video_uri);
+          } else {
+            dispatch(setUri(await AsyncStorage.getItem('@ln_video_loc')))
+          }
+        } else {
+          dispatch(setUri(null));
+          await AsyncStorage.removeItem('@ln_video_uri');
+          await AsyncStorage.removeItem('@ln_video_loc');
+        }
+
       } else {
         throw res.message
       }
