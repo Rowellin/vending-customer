@@ -1,8 +1,8 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import * as FileSystem from 'expo-file-system';
-import { useEffect, useState } from "react";
-import { ToastAndroid } from "react-native";
+import { useEffect, useRef, useState } from "react";
+import { PanResponder, ToastAndroid } from "react-native";
 import { useDispatch } from "react-redux";
 import { vendingService } from "../api/vending";
 import { setUri } from "../Slices/HomeSlice";
@@ -16,18 +16,75 @@ export function useHome(isFocused) {
   const [press, setPress] = useState(false);
   const dispatch = useDispatch();
 
+  // idle
+  const timerId = useRef(false)
+  const [idle, setIdle] = useState(false)
+  const panResponder = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponderCapture: () => {
+        onTouch()
+      },
+    })
+  ).current
+
+  const resetInactivityTimeout = () => {
+    clearTimeout(timerId.current)
+    timerId.current = setTimeout(() => {
+      setIdle(true)
+    }, 15 * 1000)
+  }
+
+  const onTouch = () => {
+    setIdle(false)
+    resetInactivityTimeout()
+  }
+  // idle
+
+  // filesystem
+  const downloadVideo = async (from, name, uriSrc, type) => {
+
+    // download
+    const { uri } = await FileSystem.downloadAsync(from, FileSystem.documentDirectory + name);
+    dispatch(setUri({ type, value: uri }))
+
+    // save at local storage
+    await AsyncStorage.setItem(`@${type}_uri`, uriSrc);
+    await AsyncStorage.setItem(`@${type}_loc`, uri);
+  }
+
+  const getVideo = async (videoUri, type) => {
+
+    // load local storiage
+    const currentVideo = await AsyncStorage.getItem(`@${type}_uri`)
+
+    // logic whether download or not 
+    if (currentVideo === null || videoUri !== currentVideo) {
+      downloadVideo(videoUri, `${type}.mp4`, videoUri, type);
+    } else {
+      dispatch(setUri({ type, value: await AsyncStorage.getItem(`@${type}_loc`) }))
+    }
+  }
+
+  const removeVideo = async (type) => {
+    dispatch(setUri({ type, value: null }));
+    await AsyncStorage.removeItem(`@${type}_uri`);
+    await AsyncStorage.removeItem(`@${type}_loc`);
+  }
+
+  const processVideo = async (videoUri, type) => {
+    if (videoUri) {
+      await getVideo(videoUri, type);
+    } else {
+      await removeVideo(type);
+    }
+  }
+  // filesystem
+
   const fetchProduct = async () => {
 
     const vendingName = await AsyncStorage.getItem('@vending_name')
     if (vendingName === null) {
       navigation.navigate('Setting');
-    }
-
-    async function downloadVideo(from, name, uriSrc) {
-      await AsyncStorage.setItem('@ln_video_uri', uriSrc);
-      const { uri } = await FileSystem.downloadAsync(from, FileSystem.documentDirectory + name);
-      dispatch(setUri(uri))
-      await AsyncStorage.setItem('@ln_video_loc', uri);
     }
 
     try {
@@ -36,18 +93,8 @@ export function useHome(isFocused) {
       if (res.success) {
         setData(res.data)
 
-        if (res.data.video.ln_video_uri) {
-          const ln_video = await AsyncStorage.getItem('@ln_video_uri')
-          if (ln_video === null || res.data.video.ln_video_uri !== ln_video) {
-            downloadVideo(res.data.video.ln_video_uri, 'ln_video.mp4', res.data.video.ln_video_uri);
-          } else {
-            dispatch(setUri(await AsyncStorage.getItem('@ln_video_loc')))
-          }
-        } else {
-          dispatch(setUri(null));
-          await AsyncStorage.removeItem('@ln_video_uri');
-          await AsyncStorage.removeItem('@ln_video_loc');
-        }
+        await processVideo(res.data.video.ln_video_uri, 'ln_video')
+        await processVideo(res.data.video.pt_video_uri, 'pt_video')
 
       } else {
         throw res.message
@@ -80,11 +127,15 @@ export function useHome(isFocused) {
 
   useEffect(() => {
     fetchProduct();
+    resetInactivityTimeout();
   }, [isFocused])
 
   return {
     data,
     press,
     onPressHandler,
+    onTouch,
+    panResponder,
+    idle,
   }
 }

@@ -4,14 +4,14 @@ import { Video } from 'expo-av';
 import { useSelector } from 'react-redux';
 
 export default function VideoHome() {
-  const uri = useSelector(state => state.videoHome)
+  const { videoHomeLn } = useSelector(state => state.videoHome)
 
   return (
     <>
       <View style={styles.container}>
-        {uri && <Video
+        {videoHomeLn && <Video
           style={styles.video}
-          source={{ uri }}
+          source={{ uri: videoHomeLn }}
           resizeMode="contain"
           isLooping
           shouldPlay

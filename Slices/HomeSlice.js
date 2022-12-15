@@ -1,11 +1,28 @@
 import { createSlice } from '@reduxjs/toolkit'
 
+const initialState = {
+  'videoHomeLn': null,
+  'videoHomePt': null,
+};
+
 export const videoHomeSlice = createSlice({
   name: 'videoHome',
-  initialState: null,
+  initialState,
   reducers: {
     setUri: (state, action) => {
-      return action.payload
+      if (action.payload.type == 'ln_video') {
+        return {
+          ...state,
+          videoHomeLn: action.payload.value
+        }
+      } else if (action.payload.type == 'pt_video') {
+        return {
+          ...state,
+          videoHomePt: action.payload.value
+        }
+      } else {
+        return initialState;
+      }
     }
   }
 })
