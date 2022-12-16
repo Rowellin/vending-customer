@@ -11,20 +11,21 @@ import VideoHomePotrait from '../Components/VideoHomePotrait';
 
 export default function HomeScreen() {
   const isFocused = useIsFocused()
-  const { data: { products, bg }, press, onPressHandler, onTouch, panResponder, idle } = useHome(isFocused);
+  const { data: { products, bg }, press, onPressHandler, resetInactivityTimeout, idle } = useHome(isFocused);
 
   return (
     <>
       {idle
         ?
-        <VideoHomePotrait onTouch={onTouch} />
+        <VideoHomePotrait onTouch={resetInactivityTimeout} />
         :
-        <ImageBackground className='flex-1' source={bg ? { uri: bg + '?' + new Date() } : ''} resizeMode="cover" {...panResponder.panHandlers}>
+        <ImageBackground className='flex-1' source={bg ? { uri: bg + '?' + new Date() } : ''} resizeMode="cover">
           <Setting />
           <VideoHome />
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
+            onTouchStart={resetInactivityTimeout}
           >
             {products.length != 0 &&
               <FlatList

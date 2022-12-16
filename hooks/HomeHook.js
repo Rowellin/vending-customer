@@ -2,7 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import * as FileSystem from 'expo-file-system';
 import { useEffect, useRef, useState } from "react";
-import { PanResponder, ToastAndroid } from "react-native";
+import { ToastAndroid } from "react-native";
 import { useDispatch } from "react-redux";
 import { vendingService } from "../api/vending";
 import { setUri } from "../Slices/HomeSlice";
@@ -19,24 +19,14 @@ export function useHome(isFocused) {
   // idle
   const timerId = useRef(false)
   const [idle, setIdle] = useState(false)
-  const panResponder = useRef(
-    PanResponder.create({
-      onStartShouldSetPanResponderCapture: () => {
-        onTouch()
-      },
-    })
-  ).current
+  const [timer, setTimer] = useState(300)
 
   const resetInactivityTimeout = () => {
     clearTimeout(timerId.current)
+    setIdle(false)
     timerId.current = setTimeout(() => {
       setIdle(true)
-    }, 15 * 1000)
-  }
-
-  const onTouch = () => {
-    setIdle(false)
-    resetInactivityTimeout()
+    }, timer * 1000)
   }
   // idle
 
@@ -93,6 +83,7 @@ export function useHome(isFocused) {
       if (res.success) {
         setData(res.data)
 
+        setTimer(res.data.video.switch_screen)
         await processVideo(res.data.video.ln_video_uri, 'ln_video')
         await processVideo(res.data.video.pt_video_uri, 'pt_video')
 
@@ -134,8 +125,7 @@ export function useHome(isFocused) {
     data,
     press,
     onPressHandler,
-    onTouch,
-    panResponder,
+    resetInactivityTimeout,
     idle,
   }
 }
